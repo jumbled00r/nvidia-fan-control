@@ -15,7 +15,7 @@ go build -o nvidia-fan-control
 edit the file `config.json` with the following structure
 ```
 {
-    "time_to_update": 3,
+    "time_to_update": 2.5,
     "temperature_ranges": [
       { "min_temperature": 0, "max_temperature": 45, "fan_speed": 0, "hysteresis": 0 },
       { "min_temperature": 45, "max_temperature": 50, "fan_speed": 40, "hysteresis": 4 },
