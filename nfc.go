@@ -59,7 +59,7 @@ func getFanSpeedForTemperature(temp int, prevSpeed int, ranges []TemperatureRang
 }
 
 func setupLogging(logFilePath string) (*os.File, error) {
-	logFile, err := os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	logFile, err := os.OpenFile(logFilePath, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open log file %s: %w", logFilePath, err)
 	}
@@ -75,6 +75,7 @@ func loadConfig(file string) (Config, error) {
 		return config, err
 	}
 	err = json.Unmarshal(data, &config)
+
 	if config.TimeToUpdate <= 0 {
 		log.Printf("WARN: time_to_update (%d) is invalid, defaulting to 5 seconds.", config.TimeToUpdate)
 		config.TimeToUpdate = 5
@@ -136,6 +137,7 @@ func initDevices() (int, []int, [][]int, error) {
 		log.Printf("INFO: Initialized GPU %d: Temp=%d°C, FanSpeeds=%v%%", i, int(temp), FanSpeeds[i])
 		initializedDevices++
 	}
+
 	if initializedDevices == 0 && count > 0 {
 		return count, FanCounts, FanSpeeds, fmt.Errorf("found %d devices, but failed to initialize any for fan control", count)
 	}
@@ -196,19 +198,23 @@ func main() {
 		log.Fatalf("FATAL: %v", err)
 	}
 	defer logFile.Close()
+
 	config, err := loadConfig("config.json")
 	if err != nil {
 		log.Fatalf("FATAL: Failed to load config: %v", err)
 	}
+
 	nvmlCleanup, err := initNVML()
 	if err != nil {
 		log.Fatalf("FATAL: %v", err)
 	}
 	defer nvmlCleanup()
+
 	count, FanCounts, FanSpeeds, err := initDevices()
 	if err != nil {
 		log.Fatalf("FATAL: %v", err)
 	}
+
 	hasControllableFans := false
 	for _, fc := range FanCounts {
 		if fc > 0 {
@@ -216,10 +222,13 @@ func main() {
 			break
 		}
 	}
+
 	if !hasControllableFans {
 		log.Println("INFO: No devices with controllable fans were found or initialized. Exiting.")
 		return
 	}
+
 	runMonitoringLoop(config, count, FanCounts, FanSpeeds)
+
 	log.Println("INFO: Monitoring loop finished unexpectedly.")
 }
