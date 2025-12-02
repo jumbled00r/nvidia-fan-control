@@ -40,7 +40,7 @@ It will return to Stage 1 only when GPU is 42°C (min_temperature - hysteresis).
 ```bash
 sudo vi /etc/systemd/system/nvidia-fan-control.service
 ```
-update WorkingDirectory and set the path to your config file
+Update `WorkingDirectory` to the directory containing `config.json`.
 ```
 [Unit]
 Description=NVIDIA Fan Control Service
