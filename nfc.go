@@ -86,8 +86,8 @@ func loadConfig(file string) (Config, error) {
 	}
 	err = json.Unmarshal(data, &config)
 	if config.TimeToUpdate <= 0 {
-		log.Printf("WARN: time_to_update (%f) is invalid, defaulting to 5.0 seconds.", config.TimeToUpdate)
-		config.TimeToUpdate = 5.0
+		log.Printf("WARN: time_to_update (%f) is invalid, defaulting to 2.0 seconds.", config.TimeToUpdate)
+		config.TimeToUpdate = 2.0
 	}
 	log.Println("INFO: Configuration loaded.")
 	return config, err
